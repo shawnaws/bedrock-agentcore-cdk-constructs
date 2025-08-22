@@ -1,13 +1,13 @@
 {
   "name": "bedrock-agentcore-cdk-constructs",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "AWS CDK constructs for Bedrock Agent Core and supporting components",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shawnaws/bedrock-agentcore-cdk-constructs.git"
   },
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "lib/src/index.js",
+  "types": "lib/src/index.d.ts",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
