@@ -67,6 +67,7 @@ export declare class ValidationUtils {
      * Validate Docker project root path
      */
     static validateDockerProjectRoot(path: string): ValidationResult;
+    static validateTarballImageFilePath(file: string): ValidationResult;
     /**
      * Combine multiple validation results
      */

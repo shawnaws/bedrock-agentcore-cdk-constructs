@@ -3,6 +3,7 @@
  */
 
 import { ValidationResult, ConfigValidator, ConstructError } from './interfaces';
+import fs from "fs";
 
 /**
  * Base validator class that provides common validation utilities
@@ -284,6 +285,45 @@ export class ValidationUtils {
     })();
 
     return validator.validate(path);
+  }
+
+  static validateTarballImageFilePath(file: string): ValidationResult {
+    const validator = new (class extends BaseValidator<string> {
+      validate(config: string): ValidationResult {
+        this.reset();
+
+        if (!this.validateRequired(config, 'image file path')) {
+          return this.createResult();
+        }
+
+        // Basic path validation
+        if (config.includes('..')) {
+          this.addWarning(
+            'Image file path contains ".." which may cause issues',
+            'Consider using an absolute path or a relative path without ".."'
+          );
+        }
+
+        // Check if the path points to a file that exists
+        if (!config.endsWith('.tar')) {
+          this.addWarning(
+            'Image file path does not point to a .tar',
+            'Ensure the image file path points to a valid Tar image file'
+          );
+        }
+
+        if ( fs.existsSync(config) === false) {
+          this.addError(
+            'Image file path does not exist',
+            'Ensure the image file path points to a valid Tar image file'
+          );
+        }
+
+        return this.createResult();
+      }
+    })();
+
+    return validator.validate(file);
   }
 
   /**

@@ -23,7 +23,11 @@ export interface BedrockAgentCoreRuntimeAgentProps extends BaseConstructProps {
      * Path to Docker build context containing Dockerfile.agent-core
      * Must be a valid directory path relative to the CDK app
      */
-    projectRoot: string;
+    projectRoot?: string;
+    /**
+     * Tarball image - exclusive use for instead of projectRoot.
+     */
+    tarballImageFile?: string;
     /**
      * S3 bucket for data storage
      * The agent will have read/write access to this bucket
@@ -173,6 +177,7 @@ export declare class BedrockAgentCoreRuntimeAgent extends Construct {
      * @throws {Error} If the project root doesn't exist or Dockerfile.agent-core is missing
      */
     private buildImageAsset;
+    private buildTarballAsset;
     /**
      * Create the Agent Core Runtime using AWS Custom Resource
      *

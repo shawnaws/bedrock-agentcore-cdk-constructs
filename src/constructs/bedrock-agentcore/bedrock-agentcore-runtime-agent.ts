@@ -7,7 +7,7 @@ import {
     ServicePrincipal,
     Effect
 } from 'aws-cdk-lib/aws-iam';
-import { DockerImageAsset, Platform } from 'aws-cdk-lib/aws-ecr-assets';
+import { DockerImageAsset, Platform, TarballImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { BedrockKnowledgeBase } from '../bedrock/bedrock-knowledge-base';
 import { VectorCollection } from '@cdklabs/generative-ai-cdk-constructs/lib/cdk-lib/opensearchserverless';
@@ -72,6 +72,19 @@ class BedrockAgentCoreRuntimeAgentPropsValidator extends BaseValidator<BedrockAg
         // Validate project root path
         if (props.projectRoot) {
             const pathValidation = ValidationUtils.validateDockerProjectRoot(props.projectRoot);
+            if (!pathValidation.isValid) {
+                this.errors.push(...pathValidation.errors);
+            }
+            if (pathValidation.warnings.length > 0) {
+                this.warnings.push(...pathValidation.warnings);
+            }
+            if (pathValidation.suggestions) {
+                this.suggestions.push(...pathValidation.suggestions);
+            }
+        }
+
+        if (props.tarballImageFile) {
+            const pathValidation = ValidationUtils.validateTarballImageFilePath(props.tarballImageFile);
             if (!pathValidation.isValid) {
                 this.errors.push(...pathValidation.errors);
             }
@@ -167,7 +180,12 @@ export interface BedrockAgentCoreRuntimeAgentProps extends BaseConstructProps {
      * Path to Docker build context containing Dockerfile.agent-core
      * Must be a valid directory path relative to the CDK app
      */
-    projectRoot: string;
+    projectRoot?: string;
+
+    /**
+     * Tarball image - exclusive use for instead of projectRoot. 
+     */
+    tarballImageFile?: string;
 
     /** 
      * S3 bucket for data storage
@@ -346,7 +364,15 @@ export class BedrockAgentCoreRuntimeAgent extends Construct {
 
             // Create resources with error handling
             this.agentRole = this.createAgentIamRole(this.config);
-            const asset = this.buildImageAsset(this.config);
+            let asset;
+            if ( this.config.projectRoot !== "" && this.config.tarballImageFile === "") {
+                asset = this.buildImageAsset(this.config);
+            } else if ( this.config.tarballImageFile !== "" && this.config.projectRoot === "") {
+                asset = this.buildTarballAsset(this.config);
+            } else {
+                throw new Error(`Failed to create BedrockAgentCoreRuntimeAgent resources: Exactly 1 of projectRoot or tarballImageFile must be set.`);
+            }
+            
             const crPolicy = this.getCustomResourcePolicy();
             const agentRuntime = this.createAgentCoreRuntime(this.config, asset, crPolicy);
             this.agentRuntimeArn = agentRuntime.getResponseField('agentRuntimeArn');
@@ -399,7 +425,8 @@ export class BedrockAgentCoreRuntimeAgent extends Construct {
             ...baseDefaults,
             agentName: props.agentName,
             instruction: props.instruction,
-            projectRoot: props.projectRoot,
+            projectRoot: props.projectRoot || "",
+            tarballImageFile: props.tarballImageFile || "",
             s3Bucket: props.s3Bucket,
             s3Prefix: props.s3Prefix,
             knowledgeBases: props.knowledgeBases,
@@ -455,6 +482,13 @@ export class BedrockAgentCoreRuntimeAgent extends Construct {
         return dockerImageAsset;
     }
 
+    private buildTarballAsset(config: Required<BedrockAgentCoreRuntimeAgentProps>) {
+        const tarballImageAsset = new TarballImageAsset(this, `${this.agentName}-TarballAsset`, {
+            tarballFile: config.tarballImageFile,            
+        })
+        return tarballImageAsset;
+    }
+
     /**
      * Create the Agent Core Runtime using AWS Custom Resource
      * 
@@ -472,7 +506,7 @@ export class BedrockAgentCoreRuntimeAgent extends Construct {
      * 
      * @throws {Error} If the agent runtime cannot be created or configured
      */
-    private createAgentCoreRuntime(config: Required<BedrockAgentCoreRuntimeAgentProps>, imageAsset: DockerImageAsset, agentCorePolicy: cr.AwsCustomResourcePolicy) {
+    private createAgentCoreRuntime(config: Required<BedrockAgentCoreRuntimeAgentProps>, imageAsset: DockerImageAsset | TarballImageAsset, agentCorePolicy: cr.AwsCustomResourcePolicy) {
 
         // Shared configuration for Agent Core Runtime parameters
         const commonDescription = config.description;

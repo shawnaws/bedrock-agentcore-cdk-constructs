@@ -40,7 +40,8 @@
     "@cdklabs/generative-ai-cdk-constructs": "^0.1.0",
     "aws-cdk-lib": "^2.100.0",
     "bedrock-agentcore-cdk-constructs": "github:shawnaws/bedrock-agentcore-cdk-constructs",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "fs": "^0.0.1-security"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
