@@ -4,7 +4,7 @@
   "description": "AWS CDK constructs for Bedrock Agent Core and supporting components",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shawnaws/bedrock-agentcore-cdk-constructs"
+    "url": "git+https://github.com/shawnaws/bedrock-agentcore-cdk-constructs.git"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -29,21 +29,18 @@
     "knowledge-base",
     "infrastructure"
   ],
-  "author": "",
+  "author": "Shawn Chasse",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": ""
-  },
   "files": [
     "lib/**/*",
     "README.md",
     "LICENSE"
   ],
   "dependencies": {
+    "@cdklabs/generative-ai-cdk-constructs": "^0.1.0",
     "aws-cdk-lib": "^2.100.0",
-    "constructs": "^10.0.0",
-    "@cdklabs/generative-ai-cdk-constructs": "^0.1.0"
+    "bedrock-agentcore-cdk-constructs": "github:shawnaws/bedrock-agentcore-cdk-constructs",
+    "constructs": "^10.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
@@ -63,5 +60,15 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "lib": "lib",
+    "test": "test"
+  },
+  "bugs": {
+    "url": "https://github.com/shawnaws/bedrock-agentcore-cdk-constructs/issues"
+  },
+  "homepage": "https://github.com/shawnaws/bedrock-agentcore-cdk-constructs#readme"
 }
