@@ -312,13 +312,6 @@ export class ValidationUtils {
           );
         }
 
-        if ( fs.existsSync(config) === false) {
-          this.addError(
-            'Image file path does not exist',
-            'Ensure the image file path points to a valid Tar image file'
-          );
-        }
-
         return this.createResult();
       }
     })();
