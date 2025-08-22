@@ -1,7 +1,11 @@
 {
-  "name": "reusable-cdk-constructs",
+  "name": "bedrock-agentcore-cdk-constructs",
   "version": "0.1.0",
-  "description": "Reusable AWS CDK constructs for Bedrock Agent Core and Knowledge Base deployment",
+  "description": "AWS CDK constructs for Bedrock Agent Core and supporting components",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shawnaws/bedrock-agentcore-cdk-constructs"
+  },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {

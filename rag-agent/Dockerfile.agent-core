@@ -1,0 +1,12 @@
+# RAG Agent Dockerfile for Bedrock Agent Core Runtime
+FROM public.ecr.aws/lambda/nodejs:18-arm64
+
+# Copy RAG agent application code
+COPY package*.json ./
+COPY src/ ./src/
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Set the CMD to your handler
+CMD ["src/index.handler"]

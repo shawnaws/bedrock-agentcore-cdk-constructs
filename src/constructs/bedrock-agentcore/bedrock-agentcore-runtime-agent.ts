@@ -783,6 +783,7 @@ export class BedrockAgentCoreRuntimeAgent extends Construct {
                 ]
             }));
             agentRole.addToPolicy(new PolicyStatement({
+                sid: `KnowledgeBaseId-${kb.vectorKb.knowledgeBaseId}`,
                 effect: Effect.ALLOW,
                 actions: [
                     "bedrock:Retrieve",

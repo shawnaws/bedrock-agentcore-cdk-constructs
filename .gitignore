@@ -9,9 +9,16 @@ lib/
 dist/
 *.tsbuildinfo
 
-# Coverage reports
+# Test outputs and generated files
 coverage/
 *.lcov
+test-results/
+junit.xml
+*.test.js.map
+*.spec.js.map
+
+# Jest cache
+.jest/
 
 # IDE files
 .vscode/
@@ -53,3 +60,16 @@ pids/
 # Temporary folders
 tmp/
 temp/
+
+# Generated documentation
+docs/api/
+typedoc-out/
+
+# TypeScript compiled test files
+test/**/*.js
+test/**/*.js.map
+test/**/*.d.ts
+
+# CDK generated files
+*.d.ts.map
+*.js.map
