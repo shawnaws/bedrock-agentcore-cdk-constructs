@@ -37,7 +37,6 @@ class BedrockAgentCoreRuntimeAgentPropsValidator extends BaseValidator<BedrockAg
         // Validate required fields
         this.validateRequired(props.agentName, 'agentName');
         this.validateRequired(props.instruction, 'instruction');
-        this.validateRequired(props.projectRoot, 'projectRoot');
         this.validateRequired(props.s3Bucket, 's3Bucket');
         this.validateRequired(props.s3Prefix, 's3Prefix');
         this.validateRequired(props.knowledgeBases, 'knowledgeBases');
