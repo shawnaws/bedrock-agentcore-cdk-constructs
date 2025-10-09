@@ -77,7 +77,7 @@ Creates and manages Amazon Bedrock Knowledge Bases with support for multiple vec
 - CloudWatch monitoring and logging
 - Comprehensive input validation
 
-#### Example with Monitoring
+#### Example with Mfonitoring
 
 ```typescript
 const knowledgeBase = new BedrockKnowledgeBase(this, 'MonitoredKB', {
@@ -116,40 +116,23 @@ Creates and manages Amazon Bedrock Agent Core Runtime Agents with comprehensive 
 
 - Foundation model selection and configuration
 - Knowledge base integration for RAG capabilities
-- Action groups for custom functionality
 - CloudWatch and X-Ray monitoring
 - Prompt override configurations
 - Session management and timeouts
 
-#### Example with Action Groups
+#### Example with Prompt Override
 
 ```typescript
 const agent = new BedrockAgentCoreRuntimeAgent(this, 'AdvancedAgent', {
   agentName: 'advanced-agent',
-  description: 'Agent with custom actions and knowledge bases',
+  description: 'Agent with custom prompt override',
   foundationModel: 'anthropic.claude-3-sonnet-20240229-v1:0',
-  instruction: 'You are an advanced AI agent with access to knowledge bases and custom actions.',
+  instruction: 'You are an advanced AI agent with access to knowledge bases.',
   
   knowledgeBaseIds: [
     knowledgeBase1.knowledgeBaseId,
     knowledgeBase2.knowledgeBaseId
   ],
-  
-  actionGroups: [{
-    actionGroupName: 'customer-actions',
-    description: 'Actions for customer management',
-    actionGroupExecutor: {
-      lambda: {
-        functionArn: customerFunction.functionArn
-      }
-    },
-    apiSchema: {
-      s3: {
-        s3BucketName: 'api-schemas-bucket',
-        s3ObjectKey: 'customer-actions.json'
-      }
-    }
-  }],
   
   monitoring: {
     enableCloudWatch: true,
