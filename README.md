@@ -15,7 +15,7 @@ A comprehensive TypeScript library providing high-level AWS CDK constructs for A
 ## Installation
 
 ```bash
-npm install @your-org/bedrock-cdk-constructs
+npm install @shawnaws/bedrock-cdk-constructs
 ```
 
 ## Quick Start
