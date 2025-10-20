@@ -362,6 +362,7 @@ export class BedrockKnowledgeBase extends Construct {
             // Create CloudFormation outputs
             this.createOutputs();
         } catch (error) {
+            console.log(error)
             throw new Error(`Failed to create BedrockKnowledgeBase resources: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
