@@ -39,7 +39,6 @@ class BedrockAgentCoreRuntimeAgentPropsValidator extends BaseValidator<BedrockAg
         this.validateRequired(props.instruction, 'instruction');
         this.validateRequired(props.s3Bucket, 's3Bucket');
         this.validateRequired(props.s3Prefix, 's3Prefix');
-        this.validateRequired(props.knowledgeBases, 'knowledgeBases');
 
         // Validate agent name format
         if (props.agentName) {
@@ -109,10 +108,8 @@ class BedrockAgentCoreRuntimeAgentPropsValidator extends BaseValidator<BedrockAg
             }
         }
 
-        // Validate knowledge bases array
-        if (props.knowledgeBases && !this.validateNonEmptyArray(props.knowledgeBases, 'knowledgeBases')) {
-            // Error already added by validateNonEmptyArray
-        }
+        // Validate knowledge bases array if provided
+        // Empty array is allowed since knowledgeBases is now optional
 
         // Validate protocol if provided
         if (props.protocol) {
@@ -201,8 +198,9 @@ export interface BedrockAgentCoreRuntimeAgentProps extends BaseConstructProps {
     /** 
      * Associated knowledge bases for the agent
      * The agent will have retrieval permissions for these knowledge bases
+     * @default []
      */
-    knowledgeBases: BedrockKnowledgeBase[];
+    knowledgeBases?: BedrockKnowledgeBase[];
 
     /** 
      * Communication protocol for the agent runtime
@@ -284,6 +282,7 @@ export interface BedrockAgentCoreRuntimeAgentProps extends BaseConstructProps {
  * 
  * @example
  * ```typescript
+ * // With knowledge bases
  * const agent = new BedrockAgentCoreRuntimeAgent(this, 'MyAgent', {
  *   agentName: 'my-helpful-agent',
  *   instruction: 'You are a helpful assistant that can answer questions using the provided knowledge base.',
@@ -293,6 +292,16 @@ export interface BedrockAgentCoreRuntimeAgentProps extends BaseConstructProps {
  *   knowledgeBases: [myKnowledgeBase],
  *   environment: 'prod',
  *   protocol: 'HTTPS'
+ * });
+ * 
+ * // Without knowledge bases
+ * const simpleAgent = new BedrockAgentCoreRuntimeAgent(this, 'SimpleAgent', {
+ *   agentName: 'simple-agent',
+ *   instruction: 'You are a helpful assistant.',
+ *   projectRoot: './agent-code',
+ *   s3Bucket: myDataBucket,
+ *   s3Prefix: 'agent-data/',
+ *   environment: 'prod'
  * });
  * ```
  */
@@ -428,7 +437,7 @@ export class BedrockAgentCoreRuntimeAgent extends Construct {
             tarballImageFile: props.tarballImageFile || "",
             s3Bucket: props.s3Bucket,
             s3Prefix: props.s3Prefix,
-            knowledgeBases: props.knowledgeBases,
+            knowledgeBases: props.knowledgeBases || [],
             protocol: (props.protocol || BEDROCK_AGENT_CORE_DEFAULTS.protocol) as 'HTTP' | 'HTTPS',
             environmentVars: props.environmentVars || {},
             dockerPlatform: props.dockerPlatform || Platform.LINUX_ARM64,
@@ -804,28 +813,30 @@ export class BedrockAgentCoreRuntimeAgent extends Construct {
                 `${config.s3Bucket.bucketArn}/${config.s3Prefix}*`,
             ],
         }));
-        // Add knowledge base permissions
-        for (const kb of config.knowledgeBases) {
-            agentRole.addToPolicy(new PolicyStatement({
-                effect: Effect.ALLOW,
-                actions: [
-                    "aoss:APIAccessAll"
-                ],
-                resources: [
-                    `arn:${this.partition}:aoss:${this.region}:${this.account}:collection/${(kb.vectorKb.vectorStore as VectorCollection).collectionName}`
-                ]
-            }));
-            agentRole.addToPolicy(new PolicyStatement({
-                sid: `KB${kb.vectorKb.knowledgeBaseId}`,
-                effect: Effect.ALLOW,
-                actions: [
-                    "bedrock:Retrieve",
-                    "bedrock:RetrieveAndGenerate"
-                ],
-                resources: [
-                    `${kb.vectorKb.knowledgeBaseArn}`
-                ]
-            }));
+        // Add knowledge base permissions if provided
+        if (config.knowledgeBases && config.knowledgeBases.length > 0) {
+            for (const kb of config.knowledgeBases) {
+                agentRole.addToPolicy(new PolicyStatement({
+                    effect: Effect.ALLOW,
+                    actions: [
+                        "aoss:APIAccessAll"
+                    ],
+                    resources: [
+                        `arn:${this.partition}:aoss:${this.region}:${this.account}:collection/${(kb.vectorKb.vectorStore as VectorCollection).collectionName}`
+                    ]
+                }));
+                agentRole.addToPolicy(new PolicyStatement({
+                    sid: `KB${kb.vectorKb.knowledgeBaseId}`,
+                    effect: Effect.ALLOW,
+                    actions: [
+                        "bedrock:Retrieve",
+                        "bedrock:RetrieveAndGenerate"
+                    ],
+                    resources: [
+                        `${kb.vectorKb.knowledgeBaseArn}`
+                    ]
+                }));
+            }
         }
 
         // Add any additional policy statements provided by the user

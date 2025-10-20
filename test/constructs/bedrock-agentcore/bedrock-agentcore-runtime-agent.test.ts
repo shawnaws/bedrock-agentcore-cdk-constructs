@@ -80,19 +80,34 @@ describe('BedrockAgentCoreRuntimeAgent', () => {
             }).toThrow(/Agent instruction must be at least 10 characters long/);
         });
 
-        test('should throw error for empty knowledge bases array', () => {
+        test('should allow empty knowledge bases array', () => {
             const props: BedrockAgentCoreRuntimeAgentProps = {
                 agentName: 'test-agent',
                 instruction: 'You are a helpful test assistant',
                 projectRoot: './test-project',
                 s3Bucket: testBucket,
                 s3Prefix: 'agent-data/',
-                knowledgeBases: [] // Empty array
+                knowledgeBases: [] // Empty array is now allowed
             };
 
             expect(() => {
                 new BedrockAgentCoreRuntimeAgent(stack, 'TestAgent', props);
-            }).toThrow(/knowledgeBases must be a non-empty array/);
+            }).not.toThrow();
+        });
+
+        test('should allow omitting knowledge bases', () => {
+            const props: BedrockAgentCoreRuntimeAgentProps = {
+                agentName: 'test-agent',
+                instruction: 'You are a helpful test assistant',
+                projectRoot: './test-project',
+                s3Bucket: testBucket,
+                s3Prefix: 'agent-data/'
+                // knowledgeBases is omitted
+            };
+
+            expect(() => {
+                new BedrockAgentCoreRuntimeAgent(stack, 'TestAgent', props);
+            }).not.toThrow();
         });
 
         test('should throw error for invalid custom resource timeout', () => {

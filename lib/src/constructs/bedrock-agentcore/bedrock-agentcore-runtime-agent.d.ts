@@ -41,8 +41,9 @@ export interface BedrockAgentCoreRuntimeAgentProps extends BaseConstructProps {
     /**
      * Associated knowledge bases for the agent
      * The agent will have retrieval permissions for these knowledge bases
+     * @default []
      */
-    knowledgeBases: BedrockKnowledgeBase[];
+    knowledgeBases?: BedrockKnowledgeBase[];
     /**
      * Communication protocol for the agent runtime
      * @default 'HTTP'
@@ -116,6 +117,7 @@ export interface BedrockAgentCoreRuntimeAgentProps extends BaseConstructProps {
  *
  * @example
  * ```typescript
+ * // With knowledge bases
  * const agent = new BedrockAgentCoreRuntimeAgent(this, 'MyAgent', {
  *   agentName: 'my-helpful-agent',
  *   instruction: 'You are a helpful assistant that can answer questions using the provided knowledge base.',
@@ -125,6 +127,16 @@ export interface BedrockAgentCoreRuntimeAgentProps extends BaseConstructProps {
  *   knowledgeBases: [myKnowledgeBase],
  *   environment: 'prod',
  *   protocol: 'HTTPS'
+ * });
+ *
+ * // Without knowledge bases
+ * const simpleAgent = new BedrockAgentCoreRuntimeAgent(this, 'SimpleAgent', {
+ *   agentName: 'simple-agent',
+ *   instruction: 'You are a helpful assistant.',
+ *   projectRoot: './agent-code',
+ *   s3Bucket: myDataBucket,
+ *   s3Prefix: 'agent-data/',
+ *   environment: 'prod'
  * });
  * ```
  */
