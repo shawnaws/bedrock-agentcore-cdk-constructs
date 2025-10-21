@@ -38,7 +38,7 @@
   ],
   "dependencies": {
     "@cdklabs/generative-ai-cdk-constructs": "^0.1.0",
-    "aws-cdk-lib": "2.208.0",
+    "aws-cdk-lib": ">2.0.0",
     "bedrock-agentcore-cdk-constructs": "github:shawnaws/bedrock-agentcore-cdk-constructs",
     "constructs": "^10.0.0",
     "fs": "^0.0.1-security"
@@ -57,7 +57,7 @@
     "aws-cdk": "2.1025.0"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.100.0",
+    "aws-cdk-lib": ">2.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
